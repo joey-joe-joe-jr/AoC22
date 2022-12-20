@@ -12,8 +12,22 @@
 #include <algorithm>
 #include <numeric>
 #include <cmath>
+#include <chrono>
 
 using namespace std;
+
+struct ScopeTimer
+{
+  string msg;
+  chrono::steady_clock::time_point begin;
+  ScopeTimer():ScopeTimer(""){}
+  ScopeTimer(string m):msg(m),begin(chrono::steady_clock::now()){}
+  ~ScopeTimer()
+  {
+    chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    cout << msg << chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << endl;
+  }
+};
 
 vector<string> read_ip(string s)
 {
@@ -135,7 +149,6 @@ void onestep(Blueprint & bp, int steps_left, State state, int & max_geo)
 
   if(steps_left == 0)return;
 
-  //if(ngeo+possible_extra<max_geo) return;
   if(impossible_geo<=max_geo)
   {
     //cout << path << " " << impossible_geo << "<" << max_geo << endl;
@@ -148,10 +161,10 @@ void onestep(Blueprint & bp, int steps_left, State state, int & max_geo)
   // make a geobot?
   bool geobot_wanted = steps_left > 1;
   bool geobot_possible = (state.nore >= bp.geobot_orecost && state.nobs >= bp.geobot_obscost);
-  if(geobot_wanted)num_wanted++;
-  if(geobot_possible)num_possible++;
-  if(state.nore >= bp.geobot_orecost   &&
-     state.nobs >= bp.geobot_obscost)
+  //if(geobot_wanted)num_wanted++;
+  //if(geobot_possible)num_possible++;
+  if(geobot_wanted   &&
+     geobot_possible)
   {
     State newstate = state;  //increment resources and time
     newstate.farm(bp);
@@ -162,7 +175,7 @@ void onestep(Blueprint & bp, int steps_left, State state, int & max_geo)
     onestep(bp,steps_left-1,newstate,max_geo);
     path = path.substr(0,path.size()-5);
     done_something=true;
-    //return; //not sure if we should ALWAYS make geobot if possible??
+    return; //not sure if we should ALWAYS make geobot if possible??
   }
 
   //make an obsbot?
@@ -258,6 +271,7 @@ int most_geodes(Blueprint & bp, int nsteps)
 
 void part1(string fn, int nsteps)
 {
+  ScopeTimer timer("Part 1 time elapsed = ");
   auto bps = parse_ip(fn);
   for(auto & bp : bps) bp.print();
 
@@ -273,6 +287,7 @@ void part1(string fn, int nsteps)
 
 void part2(string fn, int nsteps)
 {
+  ScopeTimer timer("Part 2 time elapsed = ");
   auto bps = parse_ip(fn);
   for(auto & bp : bps) bp.print();
 
@@ -292,7 +307,7 @@ int main()
   //part1("input.txt",24);
   //part1("test.txt",24);
   part2("input.txt",32);
-  part2("test.txt",32);
+  //part2("test.txt",32);
 
   return 0;
 }
