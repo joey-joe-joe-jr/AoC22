@@ -1,8 +1,7 @@
-// Gives the correct answer for the test case but not the input data
-// The given net is mapped onto (in my opinion!) easier to visualise "cross" net
-// Provided the mapping is correct, this means that the code _should_ work for
-// test input and actual input (or any net you cared to provide)
-
+// Maps the given unfolded cube 'net' onto a 'cross' net
+// then performs the movements on the cross net, then
+// maps the final position back onto the absolute position
+// in the original input frame of reference
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -15,7 +14,6 @@
 #include <array>
 #include <set>
 #include <map>
-#include <bitset>
 #include <algorithm>
 #include <numeric>
 #include <cmath>
@@ -200,7 +198,7 @@ tuple< size_t, pair<int64_t,int64_t>, pair<int64_t,int64_t> > edge(Notes & notes
   if(iface==0 && dxdy==up)
   {
     iface=5;
-    ynew=0;
+    ynew=back;
     dxdy=up;
   }
   else if(iface==0 && dxdy==right)
@@ -311,7 +309,7 @@ tuple< size_t, pair<int64_t,int64_t>, pair<int64_t,int64_t> > edge(Notes & notes
   }
   else if(iface==4 && dxdy==right)
   {
-    iface=1;
+    iface=3;
     xnew=y;
     ynew=back;
     dxdy=up;
@@ -565,7 +563,7 @@ void part2(string fn, size_t face_size,array<pair<size_t,int>,6> & mapping)
   cout << fn << " Position " << xy.first+1 << "," << xy.second +1<<
                 " Direction " << dxdy.first << "," << dxdy.second<<endl;
 
-  cout << fn << " Part 1 answer = " << answer << endl;
+  cout << fn << " Part 2 answer = " << answer << endl;
 
 }
 
@@ -592,8 +590,8 @@ array<pair<size_t,int>,6> input_map={pair<size_t,int>({1u,0}),
 int main()
 {
   part2("input.txt",50,input_map);
-  //part2("test.txt",4,test_map);
-  part2("test2.txt",4,input_map);
+  part2("test.txt",4,test_map);
+  //part2("test2.txt",4,input_map);
 
   return 0;
 }
